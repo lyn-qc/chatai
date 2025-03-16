@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+.chat {
+  height: 100vh;
+  width: 100vw;
+  background: rgb(255, 255, 255);
+
+  .msg {
+    margin-bottom: 16px;
+  }
+
+  .chat-right {
+    padding: 16px;
+    padding-left: 56px;
+    background: rgb(255, 255, 255);
+    margin-left: 276px;
+    position: relative;
+
+    .logout-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+    }
+
+    .chat-box-message {
+      border-radius: 16px;
+      min-height: 16px;
+      max-width: 80%;
+      padding: 8px;
+      margin-bottom: 26px;
+    }
+
+    .userbox {
+      background: rgb(239, 246, 255);
+      color: #000;
+      line-height: 1.5;
+    }
+
+    .assistantbox {
+      display: flex;
+      gap: 8px;
+    }
+  }
+
+  .chat-box {
+
+    border-radius: 16px;
+    border: 0px solid #000;
+    text-indent: 1em;
+    position: relative;
+
+  }
+
+  .text-area {
+    border: 0px solid #000;
+    outline: none;
+    padding: 8px;
+    background-color: rgb(245, 245, 255)
+  }
+
+  .bdiv {
+    position: absolute;
+    top: 66px;
+    left: 0px;
+    padding: 8px;
+    height: 26px;
+    width: 100%;
+    border-radius: 16px;
+    background-color: rgb(245, 245, 255);
+
+    .version {
+      border: 1px solid gray;
+      border-radius: 16px;
+      padding: 0 8px;
+    }
+  }
+
+  .dbtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid gray;
+
+  }
+}
+
+.tare {
+  resize: none;
+  border: 0px solid #000;
+  border-radius: 16px;
+  outline: none;
+  padding: 8px;
+  width: 800px;
+  height: 100px;
+}
+
+
+
+.userbox {
+  background-color: #000;
+  color: #fff;
+}
+
+.chat-text-area {
+  background-color: rgb(245, 245, 255);
+  width: 800px;
+  height: 100px;
+  border-radius: 16px;
+
+  &:focus {
+    border: 1px solid black;
+  }
+}
+
+.chat-box-message {
+  line-height: 3;
+  hyphens: auto;
+  hanging-punctuation: first last;
+  /* 强制文字独立层 */
+  text-decoration-skip-ink: auto;
+  transform: translateZ(0);
+  /* 硬件加速 */
+  will-change: transform;
+  /* 预通知浏览器变化 */
+  contain: content;
+  /* 限制内部布局影响外部 */
+}
+
+.siderbom {
+  font-size: 12px;
+}
+
+.logout-btn {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 6px 16px;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #e5e7eb;
+    border-color: #d1d5db;
+  }
+}
+
+.page-pay {
+  width: 100vw;
+  height: 100vh;
+  text-align: center !important;
+
+  .pay-card-left {
+    width: 360px;
+    height: 410px;
+    margin-left: 280px;
+    border-radius: 16px;
+    padding: 16px;
+    box-sizing: border-box;
+    margin-top: 36px;
+
+    li {
+      line-height: 36px;
+      display: flex;
+      align-items: center;
+    }
+
+    ul {
+      margin-bottom: 70px;
+    }
+  }
+
+  .pay-card-right {
+    width: 360px;
+    height: 410px;
+    margin-left: 360px;
+    padding: 16px;
+    box-sizing: border-box;
+    margin-top: 36px;
+
+    li {
+      line-height: 36px;
+      display: flex;
+      align-items: center;
+    }
+  }
+}
