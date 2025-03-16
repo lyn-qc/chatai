@@ -90,18 +90,18 @@ export default function Chat() {
     // 合并消息和滚动逻辑的Effect
     useEffect(() => {
         // 处理消息存储
-        if (messages.length > 1 && !isLoading) {
-            const userMessage = messages[messages.length - 2];
-            const newLastMessage = messages[messages.length - 1];
+        // if (messages.length > 1 && !isLoading) {
+        //     const userMessage = messages[messages.length - 2];
+        //     const newLastMessage = messages[messages.length - 1];
 
-            // 并行处理API调用
-            Promise.all([
-                addmessage(userMessage as unknown as ChatMessage),
-                addmessage(newLastMessage as unknown as ChatMessage)
-            ]).catch(err =>
-                console.error('消息存储失败:', err)
-            );
-        }
+        //     // 并行处理API调用
+        //     Promise.all([
+        //         addmessage(userMessage as unknown as ChatMessage),
+        //         addmessage(newLastMessage as unknown as ChatMessage)
+        //     ]).catch(err =>
+        //         console.error('消息存储失败:', err)
+        //     );
+        // }
 
         // 处理滚动 (防抖)
         const scrollTimeout = setTimeout(() => {
