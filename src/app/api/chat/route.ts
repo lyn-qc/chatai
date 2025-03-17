@@ -2,11 +2,8 @@ import { createDeepSeek } from '@ai-sdk/deepseek';
 import { streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
-export const config = {
-    maxDuration: 10, // 调整为Hobby计划允许的最大值
-    memory: '300mb'  // 显式声明内存限制
-}
-export const maxDuration = 180;
+
+export const maxDuration = 60;
 const deepseek = createDeepSeek({
     apiKey: "sk-9ccae550b8bf4285b1c54054b133b8b2",
     baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
