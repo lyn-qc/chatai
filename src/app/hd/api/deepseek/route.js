@@ -19,7 +19,10 @@ export async function POST(request) {
 }
 
 export async function GET(request) {
-    const deepseeklist = await deepseekmodel.find();
-    return NextResponse.json(deepseeklist);
+    let page = request.nextUrl.searchParams.get('page');
+    page = parseInt(page);
+    const deepseeklist = await deepseekmodel.find().sort({ createdAt: -1 }).skip((page - 1) * 12).limit(12);
+    const sortedlist = deepseeklist.reverse();
+    return NextResponse.json(sortedlist);
 }
 

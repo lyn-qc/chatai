@@ -2,7 +2,6 @@ import { createDeepSeek } from '@ai-sdk/deepseek';
 import { streamText } from 'ai';
 
 // Allow streaming responses up to 30 seconds
-
 export const maxDuration = 60;
 const deepseek = createDeepSeek({
     apiKey: "sk-9ccae550b8bf4285b1c54054b133b8b2",

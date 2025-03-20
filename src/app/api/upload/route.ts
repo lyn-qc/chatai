@@ -38,11 +38,10 @@ export async function POST(req: Request) {
 
         // 构建提示
         const userPrompt = `我上传了一个名为 "${fileName}" 的${fileType ? `${fileType}类型` : ''}文件。
-请分析此文件并提供详细内容摘要。如果文件内容包含代码，请解释其功能和主要组件。
-如果是文本文档，请提供主要观点和重要信息的概述。
-
-文件内容:
-${fileContent}`;
+            请分析此文件并提供详细内容摘要。如果文件内容包含代码，请解释其功能和主要组件。
+            如果是文本文档，请提供主要观点和重要信息的概述。
+            文件内容:
+            ${fileContent}`;
 
         // 调用 DeepSeek API
         const result = await streamText({

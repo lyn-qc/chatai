@@ -3,6 +3,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons'
 import axios from 'axios'
 
+
+const CHUNK_SIZE = 1024 * 1024 * 2;
 export default function FileUpload() {
     const [file, setFile] = useState<File | null>(null)
     const [fileName, setFileName] = useState<string>('')
@@ -12,6 +14,11 @@ export default function FileUpload() {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const responseRef = useRef<HTMLDivElement>(null)
 
+    const [chunkProgress, setChunkProgress] = useState<number[]>([])// 存储每个分片的上传进度
+    const [activeChunk, setActiveChunk] = useState<Set<number>>(new Set())// 当前上传的分片索引
+
+
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0] || null
         if (selectedFile) {
@@ -19,6 +26,8 @@ export default function FileUpload() {
             setFileName(selectedFile.name)
         }
     }
+    //计算文件唯一哈希标识符
+
 
     const resetFileInput = () => {
         if (fileInputRef.current) {
@@ -33,18 +42,59 @@ export default function FileUpload() {
         setIsStreaming(true)
         setResponse('')
         try {
-            const formData = new FormData()
-            formData.append('file', file)
-            // 使用 fetch 以支持流式响应
-            const response = await fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-            })
-            if (!response.ok) {
-                throw new Error(`上传失败: ${response.status}`)
+            //随机id
+            const uploadID = Math.random().toString(36).substring(2)
+
+            //分片处理逻辑
+            const chunkCount = Math.ceil(file.size / CHUNK_SIZE)
+            setChunkProgress(Array(chunkCount).fill(0))
+
+            //分片上传
+            for (let index = 0; index < chunkCount; index++) {
+                setActiveChunk(prev => new Set([...prev, index]))
+
+                const start = index * CHUNK_SIZE
+                const end = Math.min(file.size, start + CHUNK_SIZE)
+                const chunk = file.slice(start, end)
+                const formData = new FormData()
+                formData.append('file', chunk)
+                formData.append('uploadID', uploadID)
+                formData.append('chunkIndex', String(index))
+                formData.append('fileName', file.name)
+                formData.append('totalChunks', String(chunkCount))
+                await axios.post('/api/uploadShard', formData, {
+                    onUploadProgress: (progressEvent) => {
+                        const newProgress = [...chunkProgress]
+                        newProgress[index] = progressEvent.progress || 0
+                        setChunkProgress(newProgress)
+                    }
+                })
+                setActiveChunk(prev => {
+                    const nextActiveChunks = new Set(prev)
+                    nextActiveChunks.delete(index)
+                    return nextActiveChunks
+                })
             }
+
+            // 所有分片上传完成后，请求合并文件
+            const mergeResponse = await fetch('/api/mergeChunks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    uploadID,
+                    fileName: file.name,
+                    totalChunks: chunkCount
+                }),
+            })
+
+            if (!mergeResponse.ok) {
+                throw new Error(`合并文件失败: ${mergeResponse.status}`)
+            }
+
             // 处理流式响应
-            const reader = response.body?.getReader()
+            const reader = mergeResponse.body?.getReader()
             if (!reader) {
                 throw new Error('无法读取响应')
             }
@@ -84,7 +134,6 @@ export default function FileUpload() {
                     responseRef.current.scrollTop = responseRef.current.scrollHeight
                 }
             }
-
             resetFileInput()
         } catch (error) {
             console.error('上传文件失败:', error)
@@ -149,18 +198,20 @@ export default function FileUpload() {
                     )}
                 </button>
 
-                {/* {(response || isStreaming) && (
-                    <div className="mt-6">
-                        <h2 className="text-lg font-semibold mb-2">分析结果：</h2>
-                        <div
-                            ref={responseRef}
-                            className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap h-64 overflow-y-auto"
-                        >
-                            {response || (isStreaming && <span>正在等待 DeepSeek 的响应...</span>)}
-                            {isStreaming && <span className="animate-pulse">▌</span>}
+                {
+                    (response || isStreaming) && (
+                        <div className="mt-6">
+                            <h2 className="text-lg font-semibold mb-2">分析结果：</h2>
+                            <div
+                                ref={responseRef}
+                                className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap h-64 overflow-y-auto"
+                            >
+                                {response || (isStreaming && <span>正在等待 DeepSeek 的响应...</span>)}
+                                {isStreaming && <span className="animate-pulse">▌</span>}
+                            </div>
                         </div>
-                    </div>
-                )} */}
+                    )
+                }
             </div>
         </div>
     )
